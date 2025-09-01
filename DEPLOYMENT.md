@@ -77,6 +77,8 @@ Netlify automatically deploys when you push to your main branch. You can:
 - **Build fails:** Check the build logs in Netlify
 - **Routing issues:** Ensure `_redirects` file is in the `public` folder
 - **Environment variables:** Verify they're set correctly in Netlify
+- **Dependency conflicts:** If you see React version conflicts, the project is configured to use `--legacy-peer-deps` flag
+- **Node version:** The project uses Node.js 20 for optimal compatibility
 
 ## Support
 
