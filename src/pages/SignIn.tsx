@@ -4,19 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Shield, Eye, EyeOff, AlertCircle, Github, Chrome } from "lucide-react";
 
 const SignIn = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // Hardcoded credentials
-  const VALID_USERNAME = "admin";
-  const VALID_PASSWORD = "1234";
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,16 +23,18 @@ const SignIn = () => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-      // Store authentication state (in a real app, this would be a JWT token)
-      localStorage.setItem("nagarSevaAuth", "true");
-      localStorage.setItem("nagarSevaUser", username);
-      
-      // Redirect to main application
-      navigate("/app");
-    } else {
-      setError("Invalid username or password. Please try again.");
+    // Basic validation: need either username or email + password
+    if ((!username.trim() && !email.trim()) || !password.trim()) {
+      setError("Enter your username or email, and your password.");
+      setIsLoading(false);
+      return;
     }
+
+    // Demo: accept any credentials; replace with API auth later
+    const displayName = username.trim() || email.trim();
+    localStorage.setItem("nagarSevaAuth", "true");
+    localStorage.setItem("nagarSevaUser", displayName);
+    navigate("/app");
 
     setIsLoading(false);
   };
@@ -70,7 +69,23 @@ const SignIn = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
                 className="mt-1"
-                required
+                required={false}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="mt-1"
+                required={false}
                 disabled={isLoading}
               />
             </div>
@@ -117,24 +132,48 @@ const SignIn = () => {
               </div>
             )}
 
-            {/* Demo Credentials Hint */}
-            <div className="p-3 bg-muted/50 rounded-lg border border-border/30">
-              <p className="text-xs text-muted-foreground text-center">
-                <strong>Demo Credentials:</strong><br />
-                Username: <code className="bg-muted px-1 rounded">admin</code><br />
-                Password: <code className="bg-muted px-1 rounded">1234</code>
-              </p>
-            </div>
-
             {/* Submit Button */}
             <Button
               type="submit"
               className="w-full bg-gradient-civic hover:opacity-90 transition-opacity"
-              disabled={isLoading || !username.trim() || !password.trim()}
+              disabled={isLoading || (!username.trim() && !email.trim()) || !password.trim()}
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
+
+          {/* Social sign-in options */}
+          <div className="flex items-center my-6">
+            <div className="h-px bg-border flex-1" />
+            <span className="px-3 text-xs text-muted-foreground">or continue with</span>
+            <div className="h-px bg-border flex-1" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                const entered = window.prompt("Enter your Google email to continue:")?.trim() || "";
+                if (!entered) return;
+                localStorage.setItem("nagarSevaAuth", "true");
+                localStorage.setItem("nagarSevaUser", entered);
+                navigate("/app");
+              }}
+            >
+              <Chrome className="w-4 h-4 mr-2" /> Google
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const entered = window.prompt("Enter your GitHub username or email:")?.trim() || "";
+                if (!entered) return;
+                localStorage.setItem("nagarSevaAuth", "true");
+                localStorage.setItem("nagarSevaUser", entered);
+                navigate("/app");
+              }}
+            >
+              <Github className="w-4 h-4 mr-2" /> GitHub
+            </Button>
+          </div>
 
           {/* Back to Landing */}
           <div className="mt-6 text-center">
@@ -150,9 +189,7 @@ const SignIn = () => {
 
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-border/30 text-center">
-            <p className="text-xs text-muted-foreground">
-              This is a demo application. In production, proper authentication would be implemented.
-            </p>
+            <p className="text-xs text-muted-foreground">Use your email/username and password, or continue with Google/GitHub.</p>
           </div>
         </div>
       </Card>
