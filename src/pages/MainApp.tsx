@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
@@ -31,9 +31,11 @@ const MainApp = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-civic rounded-lg flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary-foreground" />
-                </div>
+                <img
+                  src="public/algozen.png"
+                  alt="Algozen Logo"
+                  className="w-10 h-10 rounded-lg object-contain"
+                />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-civic-green rounded-full animate-glow-pulse"></div>
               </div>
               <div>
