@@ -32,8 +32,8 @@ const MainApp = () => {
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <img
-                  src="public/algozen.png"
-                  alt="Algozen Logo"
+                  src="public/nagarsewalogo.png"
+                  alt="Nagar Seva Logo"
                   className="w-10 h-10 rounded-lg object-contain"
                 />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-civic-green rounded-full animate-glow-pulse"></div>
