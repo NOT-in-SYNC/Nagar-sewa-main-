@@ -12,9 +12,11 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-civic rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary-foreground" />
-              </div>
+              <img
+                src="public/algozen.png"
+                alt="Algozen Logo"
+                className="w-10 h-10 rounded-lg object-contain bg-transparent"
+              />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-civic-green rounded-full animate-glow-pulse"></div>
             </div>
             <div>
