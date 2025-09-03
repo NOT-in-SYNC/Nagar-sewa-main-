@@ -43,11 +43,11 @@ const leaderboard = [
 
 const Milestones = () => {
   return (
-    <section className="py-20 bg-gradient-hero">
+    <section className="py-20" style={{ background: 'linear-gradient(180deg, rgba(255,151,0,0.06) 0%, rgba(255,255,255,1) 40%, rgba(19,133,27,0.06) 100%)' }}>
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <Badge variant="secondary" className="mb-4 text-sm font-medium">
+          <Badge variant="notice" className="mb-4 text-sm font-medium">
             Community Impact
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
@@ -71,7 +71,7 @@ const Milestones = () => {
               </div>
               <div className="text-3xl font-bold text-foreground mb-2">{milestone.value}</div>
               <div className="text-sm font-medium text-muted-foreground mb-2">{milestone.label}</div>
-              <Badge variant="outline" className={`text-xs bg-${milestone.color}/5 text-${milestone.color} border-${milestone.color}/20`}>
+              <Badge variant={milestone.color === 'civic-green' ? 'success' : milestone.color === 'civic-orange' ? 'notice' : 'info'} className={`text-xs`}>
                 {milestone.growth}
               </Badge>
             </Card>
