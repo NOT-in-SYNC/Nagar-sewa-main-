@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, Eye, EyeOff, AlertCircle, Github, Chrome } from "lucide-react";
+import { Shield, Eye, EyeOff, AlertCircle, Github, Chrome, Fingerprint } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +55,7 @@ const SignIn = () => {
               <Shield className="w-8 h-8 text-primary-foreground" />
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Welcome Back</h1>
-            <p className="text-muted-foreground">Sign in to access Nagar Seva</p>
+            <p className="text-muted-foreground">Sign in to access NagarSewa</p>
           </div>
 
           {/* Sign In Form */}
@@ -142,6 +144,32 @@ const SignIn = () => {
             </Button>
           </form>
 
+          {/* Aadhaar Verification */}
+          <div className="mt-8">
+            <div className="flex items-center mb-3">
+              <div className="h-px bg-border flex-1" />
+              <span className="px-3 text-xs text-muted-foreground">Aadhaar verification</span>
+              <div className="h-px bg-border flex-1" />
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <Button
+                type="button"
+                className="w-full bg-civic-green/90 hover:bg-civic-green text-white"
+                onClick={() => {
+                  const win = window.open("https://myaadhaar.uidai.gov.in/", "_blank");
+                  if (!win) {
+                    toast({ title: "Popup blocked", description: "Allow popups to open the UIDAI portal." });
+                  }
+                }}
+              >
+                <Fingerprint className="w-4 h-4 mr-2" /> Verify via UIDAI Portal
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Note: This Aadhaar number is used only to verify profile for Indian citizen. Nothing else; it is end-to-end encrypted.
+              </p>
+            </div>
+          </div>
+
           {/* Social sign-in options */}
           <div className="flex items-center my-6">
             <div className="h-px bg-border flex-1" />
@@ -152,11 +180,11 @@ const SignIn = () => {
             <Button
               variant="outline"
               onClick={() => {
-                const entered = window.prompt("Enter your Google email to continue:")?.trim() || "";
-                if (!entered) return;
-                localStorage.setItem("nagarSevaAuth", "true");
-                localStorage.setItem("nagarSevaUser", entered);
-                navigate("/app");
+                const win = window.open("https://accounts.google.com/signin", "_blank");
+                if (!win) {
+                  toast({ title: "Popup blocked", description: "Allow popups to continue with Google." });
+                  return;
+                }
               }}
             >
               <Chrome className="w-4 h-4 mr-2" /> Google
