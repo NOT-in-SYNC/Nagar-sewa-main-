@@ -81,7 +81,7 @@ const Rewards = () => {
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <Badge variant="secondary" className="mb-4 text-sm font-medium bg-civic-orange/10 text-civic-orange border-civic-orange/20">
+          <Badge variant="notice" className="mb-4 text-sm font-medium">
             🎁 Reward System
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
