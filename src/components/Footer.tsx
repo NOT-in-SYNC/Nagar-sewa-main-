@@ -71,11 +71,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Phone className="w-4 h-4 text-civic-green" />
-                <span className="text-muted-foreground">+1 (555) 123-4567</span>
+                <span className="text-muted-foreground">+91 999999999</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <MapPin className="w-4 h-4 text-civic-orange" />
-                <span className="text-muted-foreground">San Francisco, CA</span>
+                <span className="text-muted-foreground">Vdodara, GUJARAT</span>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border/50 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © 2024 NagarSewa. All rights reserved.
+            © 2025 NagarSewa. All rights reserved.
           </p>
           <div className="flex items-center space-x-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
