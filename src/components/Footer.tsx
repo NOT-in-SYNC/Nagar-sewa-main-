@@ -13,7 +13,7 @@ const Footer = () => {
                 <MapPin className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground">CivicReport</h3>
+                <h3 className="text-lg font-bold text-foreground">NagarSewa</h3>
                 <p className="text-xs text-muted-foreground">Empowering Communities</p>
               </div>
             </div>
@@ -67,7 +67,7 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="w-4 h-4 text-civic-blue" />
-                <span className="text-muted-foreground">hello@civicreport.com</span>
+                <span className="text-muted-foreground">support@nagarsewa.in</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Phone className="w-4 h-4 text-civic-green" />
@@ -84,7 +84,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border/50 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © 2024 CivicReport. All rights reserved.
+            © 2024 NagarSewa. All rights reserved.
           </p>
           <div className="flex items-center space-x-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
