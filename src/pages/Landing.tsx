@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import GovernmentTopBar from "@/components/GovernmentTopBar";
 import { Card } from "@/components/ui/card";
 import { Shield, Users, Award, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +12,9 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-civic-blue/5 via-background to-civic-green/5 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background">
+      <GovernmentTopBar />
+      <div className="flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl bg-background/80 backdrop-blur-sm border border-border/50 shadow-elegant">
         <div className="p-8 text-center">
           {/* Logo and Title */}
@@ -73,6 +76,7 @@ const Landing = () => {
           </div>
         </div>
       </Card>
+      </div>
     </div>
   );
 };
