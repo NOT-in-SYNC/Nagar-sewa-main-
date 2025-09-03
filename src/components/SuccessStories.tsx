@@ -59,7 +59,7 @@ const successStories = [
 
 const SuccessStories = () => {
   return (
-    <section id="success" className="py-20 bg-gradient-hero overflow-hidden">
+    <section id="success" className="py-20 overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(42,50,122,0.04), rgba(255,255,255,1))' }}>
       <div className="container mx-auto px-6 mb-12">
         <div className="text-center max-w-3xl mx-auto animate-fade-in">
           <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -90,15 +90,15 @@ const SuccessStories = () => {
                   
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2 text-sm">
-                      <MapPin className="w-4 h-4 text-civic-blue" />
+                      <MapPin className="w-4 h-4 text-[#2A327A]" />
                       <span className="text-muted-foreground">{story.location}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
-                      <Clock className="w-4 h-4 text-civic-orange" />
+                      <Clock className="w-4 h-4 text-[#FF9700]" />
                       <span className="text-muted-foreground">Resolved in {story.timeframe}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-civic-green" />
+                      <CheckCircle className="w-4 h-4 text-[#13851B]" />
                       <span className="text-muted-foreground">{story.impact}</span>
                     </div>
                   </div>
