@@ -137,7 +137,7 @@ const Features = () => {
               Ready to Transform Your Community?
             </h3>
             <p className="text-muted-foreground mb-6">
-              Join thousands of citizens already making a difference with CivicReport.
+              Join thousands of citizens already making a difference with NagarSewa.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-4">
               <div className="text-sm text-muted-foreground">
