@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import GovernmentTopBar from "@/components/GovernmentTopBar";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import Milestones from "@/components/Milestones";
@@ -10,6 +11,7 @@ import Footer from "@/components/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <GovernmentTopBar />
       <Header />
       <main>
         <Hero />
