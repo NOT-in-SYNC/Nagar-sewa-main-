@@ -20,7 +20,7 @@ const Landing = () => {
               <Shield className="w-10 h-10 text-primary-foreground" />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">
-              Nagar Seva
+              NagarSewa
             </h1>
             <p className="text-xl text-muted-foreground">
               सेवा • समुदाय • सुधार
