@@ -5,13 +5,17 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Shield, Eye, EyeOff, AlertCircle, Github, Chrome, Fingerprint } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -54,22 +58,22 @@ const SignIn = () => {
             <div className="w-16 h-16 bg-gradient-civic rounded-xl flex items-center justify-center mx-auto mb-4">
               <Shield className="w-8 h-8 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">Welcome Back</h1>
-            <p className="text-muted-foreground">Sign in to access NagarSewa</p>
+            <h1 className="text-2xl font-bold text-foreground mb-2">{t("welcome_back")}</h1>
+            <p className="text-muted-foreground">{t("signin_subtitle")}</p>
           </div>
 
           {/* Sign In Form */}
           <form onSubmit={handleSignIn} className="space-y-4">
             <div>
               <Label htmlFor="username" className="text-sm font-medium">
-                Username
+                {t("username")}
               </Label>
               <Input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder={t("username")}
                 className="mt-1"
                 required={false}
                 disabled={isLoading}
@@ -78,14 +82,31 @@ const SignIn = () => {
 
             <div>
               <Label htmlFor="email" className="text-sm font-medium">
-                Email
+                {t("email")}
               </Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("email")}
+                className="mt-1"
+                required={false}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="mobile" className="text-sm font-medium">
+                {t("mobile")}
+              </Label>
+              <Input
+                id="mobile"
+                type="tel"
+                inputMode="numeric"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value.replace(/[^0-9]/g, "").slice(0, 10))}
+                placeholder="9876543210"
                 className="mt-1"
                 required={false}
                 disabled={isLoading}
@@ -94,7 +115,7 @@ const SignIn = () => {
 
             <div>
               <Label htmlFor="password" className="text-sm font-medium">
-                Password
+                {t("password")}
               </Label>
               <div className="relative mt-1">
                 <Input
@@ -102,7 +123,7 @@ const SignIn = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t("password")}
                   className="pr-10"
                   required
                   disabled={isLoading}
@@ -135,12 +156,13 @@ const SignIn = () => {
             )}
 
             {/* Submit Button */}
+            <div className="mb-2"><LanguageSwitcher /></div>
             <Button
               type="submit"
               className="w-full bg-gradient-civic hover:opacity-90 transition-opacity"
               disabled={isLoading || (!username.trim() && !email.trim()) || !password.trim()}
             >
-              {isLoading ? "Signing In..." : "Sign In"}
+              {isLoading ? t("signing_in") : t("sign_in")}
             </Button>
           </form>
 
@@ -164,6 +186,20 @@ const SignIn = () => {
               >
                 <Fingerprint className="w-4 h-4 mr-2" /> Verify via UIDAI Portal
               </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  const url = "https://connect.csc.gov.in/account/authorize?state=YMMCMAACK5Q942SQEM&response_type=code&client_id=76f80dea-122b-4427-9883-13fb5de738e0&redirect_uri=https://pgportal.gov.in/Signin/CscResponse";
+                  const win = window.open(url, "_blank");
+                  if (!win) {
+                    toast({ title: "Popup blocked", description: "Allow popups to continue with Digital Seva Connect." });
+                  }
+                }}
+              >
+                {/* Ideally add CSC logo asset under public and reference here */}
+                {t("csc_connect")}
+              </Button>
               <p className="text-xs text-muted-foreground">
                 Note: This Aadhaar number is used only to verify profile for Indian citizen. Nothing else; it is end-to-end encrypted.
               </p>
@@ -173,7 +209,7 @@ const SignIn = () => {
           {/* Social sign-in options */}
           <div className="flex items-center my-6">
             <div className="h-px bg-border flex-1" />
-            <span className="px-3 text-xs text-muted-foreground">or continue with</span>
+            <span className="px-3 text-xs text-muted-foreground">{t("or_continue_with")}</span>
             <div className="h-px bg-border flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -187,7 +223,7 @@ const SignIn = () => {
                 }
               }}
             >
-              <Chrome className="w-4 h-4 mr-2" /> Google
+              <Chrome className="w-4 h-4 mr-2" /> {t("google")}
             </Button>
             <Button
               variant="outline"
@@ -199,7 +235,7 @@ const SignIn = () => {
                 navigate("/app");
               }}
             >
-              <Github className="w-4 h-4 mr-2" /> GitHub
+              <Github className="w-4 h-4 mr-2" /> {t("github")}
             </Button>
           </div>
 
@@ -211,7 +247,7 @@ const SignIn = () => {
               className="text-muted-foreground hover:text-foreground"
               disabled={isLoading}
             >
-              ← Back to Landing
+              {t("back_to_landing")}
             </Button>
           </div>
 
