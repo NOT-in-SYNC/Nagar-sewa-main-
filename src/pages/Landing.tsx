@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import GovernmentTopBar from "@/components/GovernmentTopBar";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Shield, Users, Award, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const handleContinue = () => {
     navigate('/signin');
@@ -22,12 +25,8 @@ const Landing = () => {
             <div className="w-20 h-20 bg-gradient-civic rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Shield className="w-10 h-10 text-primary-foreground" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">
-              NagarSewa
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              सेवा • समुदाय • सुधार
-            </p>
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">{t("app_name")}</h1>
+            <p className="text-xl text-muted-foreground">{t("tagline")}</p>
           </div>
 
           {/* Description */}
@@ -55,17 +54,16 @@ const Landing = () => {
 
           {/* Continue Button */}
           <div className="space-y-4">
+            <div className="flex items-center justify-center mb-2"><LanguageSwitcher /></div>
             <Button
               onClick={handleContinue}
               size="lg"
               className="bg-gradient-civic hover:opacity-90 transition-opacity px-8 py-4 text-lg font-semibold shadow-elegant"
             >
-              Continue
+              {t("continue")}
             </Button>
             
-            <p className="text-sm text-muted-foreground">
-              Join thousands of citizens making real change happen
-            </p>
+            <p className="text-sm text-muted-foreground">{t("join_tagline")}</p>
           </div>
 
           {/* Footer Info */}
