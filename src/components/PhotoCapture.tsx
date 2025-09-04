@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Camera, Upload, X, RotateCcw, CheckCircle, AlertCircle, Smartphone } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface PhotoCaptureProps {
   issueType: string;
@@ -11,6 +12,7 @@ interface PhotoCaptureProps {
 }
 
 const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps) => {
+  const { t } = useI18n();
   const [captureMode, setCaptureMode] = useState<'select' | 'camera' | 'preview'>('select');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>('');
@@ -79,7 +81,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
       };
       reader.readAsDataURL(file);
     } else {
-      setError('Please select a valid image file.');
+      setError(t('photo.error_invalid_image'));
     }
   };
 
@@ -90,7 +92,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
       
       // Check if we're in HTTPS or localhost
       if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-        setError('Camera access requires HTTPS. Please use file upload instead.');
+        setError(t('photo.error_https_required'));
         setIsLoading(false);
         return;
       }
@@ -115,7 +117,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
             setIsLoading(false);
           }).catch((playErr) => {
             console.error('Video play error:', playErr);
-            setError('Unable to start camera preview. Please try again.');
+            setError(t('photo.error_preview'));
             setIsLoading(false);
           });
         };
@@ -124,16 +126,16 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
       console.error('Camera error:', err);
       if (err instanceof Error) {
         if (err.name === 'NotAllowedError') {
-          setError('Camera access denied. Please allow camera permissions in your browser settings and try again.');
+          setError(t('photo.error_denied'));
         } else if (err.name === 'NotFoundError') {
-          setError('No camera found on this device. Please use file upload instead.');
+          setError(t('photo.error_no_camera'));
         } else if (err.name === 'NotReadableError') {
-          setError('Camera is being used by another application. Please close other apps and try again.');
+          setError(t('photo.error_in_use'));
         } else {
-          setError('Unable to access camera. Please check permissions or try file upload.');
+          setError(t('photo.error_generic'));
         }
       } else {
-        setError('Unable to access camera. Please check permissions or try file upload.');
+        setError(t('photo.error_generic'));
       }
       setIsLoading(false);
     }
@@ -170,14 +172,14 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
               streamRef.current = null;
             }
           } else {
-            setError('Failed to capture photo. Please try again.');
+            setError(t('photo.error_capture'));
           }
         }, 'image/jpeg', 0.9);
       } else {
-        setError('Camera not ready. Please wait a moment and try again.');
+        setError(t('photo.error_not_ready'));
       }
     } else {
-      setError('Camera not available. Please try again.');
+      setError(t('photo.error_not_available'));
     }
   };
 
@@ -205,8 +207,8 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-foreground">Report {issueType}</h2>
-              <p className="text-sm text-muted-foreground">Capture or upload a photo</p>
+              <h2 className="text-xl font-semibold text-foreground">{t('photo.header_title',)} {issueType}</h2>
+              <p className="text-sm text-muted-foreground">{t('photo.header_subtitle')}</p>
             </div>
             <Button
               variant="ghost"
@@ -229,9 +231,9 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                     className="h-16 flex-col bg-gradient-civic hover:opacity-90"
                   >
                     <Camera className="w-6 h-6 mb-2" />
-                    <span>{isLoading ? 'Starting Camera...' : 'Take Photo with Camera'}</span>
+                    <span>{isLoading ? t('photo.starting_camera') : t('photo.take_photo')}</span>
                     {isMobile && (
-                      <span className="text-xs opacity-80">(Back camera)</span>
+                      <span className="text-xs opacity-80">{t('photo.back_camera')}</span>
                     )}
                   </Button>
                 )}
@@ -242,9 +244,9 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                   className="h-16 flex-col"
                 >
                   <Upload className="w-6 h-6 mb-2" />
-                  <span>Upload from Gallery</span>
+                  <span>{t('photo.upload_gallery')}</span>
                   {isMobile && (
-                    <span className="text-xs opacity-80">(Photos & Files)</span>
+                    <span className="text-xs opacity-80">{t('photo.photos_files')}</span>
                   )}
                 </Button>
               </div>
@@ -252,9 +254,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
               {!isCameraSupported && (
                 <div className="text-center p-3 bg-muted/50 rounded-lg">
                   <AlertCircle className="w-4 h-4 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">
-                    Camera not available. Please use file upload.
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t('photo.camera_unavailable')}</p>
                 </div>
               )}
 
@@ -262,9 +262,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
               {isMobile && (
                 <div className="text-center p-3 bg-civic-blue/5 border border-civic-blue/20 rounded-lg">
                   <Smartphone className="w-4 h-4 mx-auto mb-2 text-civic-blue" />
-                  <p className="text-xs text-civic-blue">
-                    💡 Tip: For best results, hold your phone steady and ensure good lighting
-                  </p>
+                  <p className="text-xs text-civic-blue">{t('photo.tip')}</p>
                 </div>
               )}
             </div>
@@ -283,9 +281,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                 />
                 <div className="absolute inset-0 border-4 border-white/20 rounded-lg pointer-events-none"></div>
                 {/* Camera overlay for better UX */}
-                <div className="absolute top-4 left-4 bg-black/50 text-white px-2 py-1 rounded text-xs">
-                  📱 Live Camera
-                </div>
+                <div className="absolute top-4 left-4 bg-black/50 text-white px-2 py-1 rounded text-xs">{t('photo.live_camera')}</div>
               </div>
               
               <div className="flex justify-center space-x-3">
@@ -295,7 +291,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                   size="lg"
                 >
                   <Camera className="w-5 h-5 mr-2" />
-                  Capture Photo
+                  {t('photo.capture_photo')}
                 </Button>
                 <Button
                   onClick={retakePhoto}
@@ -303,7 +299,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                   size="lg"
                 >
                   <RotateCcw className="w-5 h-5 mr-2" />
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
               </div>
             </div>
@@ -321,9 +317,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                 <Badge className="absolute top-2 left-2 bg-civic-green text-white">
                   {issueType}
                 </Badge>
-                <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
-                  📸 Captured
-                </div>
+                <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">{t('photo.captured')}</div>
               </div>
               
               <div className="flex justify-center space-x-3">
@@ -333,7 +327,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                   size="lg"
                 >
                   <CheckCircle className="w-5 h-5 mr-2" />
-                  Continue to Details
+                  {t('photo.continue_to_details')}
                 </Button>
                 <Button
                   onClick={retakePhoto}
@@ -341,7 +335,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                   size="lg"
                 >
                   <RotateCcw className="w-5 h-5 mr-2" />
-                  Retake Photo
+                  {t('photo.retake_photo')}
                 </Button>
               </div>
             </div>
