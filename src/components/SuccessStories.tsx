@@ -1,4 +1,5 @@
 import { CheckCircle, Clock, MapPin } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 const successStories = [
   {
@@ -58,16 +59,13 @@ const successStories = [
 ];
 
 const SuccessStories = () => {
+  const { t } = useI18n();
   return (
     <section id="success" className="py-20 overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(42,50,122,0.04), rgba(255,255,255,1))' }}>
       <div className="container mx-auto px-6 mb-12">
         <div className="text-center max-w-3xl mx-auto animate-fade-in">
-          <h2 className="text-4xl font-bold text-foreground mb-4">
-            Real Impact, Real Results
-          </h2>
-          <p className="text-xl text-muted-foreground">
-            See how citizen reports are making our communities better, one issue at a time
-          </p>
+          <h2 className="text-4xl font-bold text-foreground mb-4">{t("stories.header_title")}</h2>
+          <p className="text-xl text-muted-foreground">{t("stories.header_subtitle")}</p>
         </div>
       </div>
 
@@ -95,7 +93,7 @@ const SuccessStories = () => {
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
                       <Clock className="w-4 h-4 text-[#FF9700]" />
-                      <span className="text-muted-foreground">Resolved in {story.timeframe}</span>
+                      <span className="text-muted-foreground">{t("stories.resolved_in")} {story.timeframe}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
                       <CheckCircle className="w-4 h-4 text-[#13851B]" />
@@ -107,9 +105,7 @@ const SuccessStories = () => {
               
               <div className="mt-4 pt-4 border-t border-border/30">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-civic-green bg-civic-green/10 px-3 py-1 rounded-full">
-                    ✓ Completed
-                  </span>
+                  <span className="text-xs font-medium text-civic-green bg-civic-green/10 px-3 py-1 rounded-full">✓ {t("stories.completed")}</span>
                   <span className="text-xs text-muted-foreground">
                     Report #CR{story.id.toString().padStart(4, '0')}
                   </span>
