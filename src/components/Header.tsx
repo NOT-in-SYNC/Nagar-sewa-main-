@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Shield, Users, Award } from "lucide-react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
 
 const Header = () => {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   
+  const { t } = useI18n();
   return (
     <header className="sticky top-0 w-full z-40 bg-background/95 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-6 py-4">
@@ -20,8 +23,8 @@ const Header = () => {
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-civic-orange rounded-full animate-glow-pulse"></div>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">NagarSewa</h1>
-              <p className="text-xs text-muted-foreground">सेवा • समुदाय • सुधार</p>
+              <h1 className="text-xl font-bold text-foreground">{t("app_name")}</h1>
+              <p className="text-xs text-muted-foreground">{t("tagline")}</p>
             </div>
           </div>
           
@@ -38,10 +41,11 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
+            <div className="hidden md:block"><LanguageSwitcher /></div>
             <Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="hidden md:flex">
-                  Sign In
+                  {t("sign_in")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
