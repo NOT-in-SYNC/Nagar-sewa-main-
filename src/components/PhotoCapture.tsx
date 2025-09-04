@@ -88,6 +88,13 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
       setIsLoading(true);
       setError('');
       
+      // Check if we're in HTTPS or localhost
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+        setError('Camera access requires HTTPS. Please use file upload instead.');
+        setIsLoading(false);
+        return;
+      }
+      
       const constraints = {
         video: {
           facingMode: isMobile ? 'environment' : 'user', // Use back camera on mobile
@@ -102,23 +109,32 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        setCaptureMode('camera');
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().then(() => {
+            setCaptureMode('camera');
+            setIsLoading(false);
+          }).catch((playErr) => {
+            console.error('Video play error:', playErr);
+            setError('Unable to start camera preview. Please try again.');
+            setIsLoading(false);
+          });
+        };
       }
     } catch (err) {
       console.error('Camera error:', err);
       if (err instanceof Error) {
         if (err.name === 'NotAllowedError') {
-          setError('Camera access denied. Please allow camera permissions and try again.');
+          setError('Camera access denied. Please allow camera permissions in your browser settings and try again.');
         } else if (err.name === 'NotFoundError') {
           setError('No camera found on this device. Please use file upload instead.');
+        } else if (err.name === 'NotReadableError') {
+          setError('Camera is being used by another application. Please close other apps and try again.');
         } else {
           setError('Unable to access camera. Please check permissions or try file upload.');
         }
       } else {
         setError('Unable to access camera. Please check permissions or try file upload.');
       }
-    } finally {
       setIsLoading(false);
     }
   };
@@ -129,7 +145,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
-      if (context) {
+      if (context && video.videoWidth > 0 && video.videoHeight > 0) {
         // Set canvas dimensions to match video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -146,15 +162,22 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
             setPhotoFile(file);
             setPhotoPreview(URL.createObjectURL(blob));
             setCaptureMode('preview');
+            setError('');
             
             // Stop camera stream
             if (streamRef.current) {
               streamRef.current.getTracks().forEach(track => track.stop());
               streamRef.current = null;
             }
+          } else {
+            setError('Failed to capture photo. Please try again.');
           }
         }, 'image/jpeg', 0.9);
+      } else {
+        setError('Camera not ready. Please wait a moment and try again.');
       }
+    } else {
+      setError('Camera not available. Please try again.');
     }
   };
 
@@ -206,7 +229,7 @@ const PhotoCapture = ({ issueType, onPhotoCaptured, onClose }: PhotoCaptureProps
                     className="h-16 flex-col bg-gradient-civic hover:opacity-90"
                   >
                     <Camera className="w-6 h-6 mb-2" />
-                    <span>Take Photo with Camera</span>
+                    <span>{isLoading ? 'Starting Camera...' : 'Take Photo with Camera'}</span>
                     {isMobile && (
                       <span className="text-xs opacity-80">(Back camera)</span>
                     )}
