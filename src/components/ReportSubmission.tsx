@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { MapPin, Camera, Clock, CheckCircle, AlertCircle, Loader2, RefreshCw, MapPinOff, HelpCircle } from "lucide-react";
 import { reportStorage, CivicReport } from "@/lib/reportStorage";
 import LocationPermissionGuide from "./LocationPermissionGuide";
+import { useI18n } from "@/lib/i18n";
 
 interface ReportSubmissionProps {
   photo: File;
@@ -24,6 +25,7 @@ interface LocationData {
 }
 
 const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmissionProps) => {
+  const { t } = useI18n();
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState<LocationData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,11 +57,11 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
     try {
       // Check if geolocation is supported
       if (!navigator.geolocation) {
-        setLocationError('Geolocation is not supported by your browser');
+        setLocationError(t('submit.geolocation_unsupported'));
         setLocation({
           latitude: 22.3072, // Default to Vadodara coordinates
           longitude: 73.1812,
-          address: 'Vadodara, Gujarat (Default Location)',
+          address: t('submit.default_location'),
           source: 'default'
         });
         return;
@@ -101,14 +103,14 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
           setLocation({
             latitude,
             longitude,
-            address: data.display_name || 'Location captured',
+            address: data.display_name || t('submit.location_captured'),
             source: 'gps'
           });
         } else {
           setLocation({
             latitude,
             longitude,
-            address: 'Location captured',
+            address: t('submit.location_captured'),
             source: 'gps'
           });
         }
@@ -116,32 +118,32 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
         setLocation({
           latitude,
           longitude,
-          address: 'Location captured',
+          address: t('submit.location_captured'),
           source: 'gps'
         });
       }
     } catch (err) {
       console.warn('Location access failed:', err);
       
-      let errorMessage = 'Unable to get your location';
+      let errorMessage = t('submit.location_unavailable');
       let defaultLocation: LocationData | null = null;
 
       if (err instanceof GeolocationPositionError) {
         switch (err.code) {
           case err.PERMISSION_DENIED:
-            errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
+            errorMessage = t('submit.location_denied');
             break;
           case err.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information is unavailable. Please try again.';
+            errorMessage = t('submit.location_info_unavailable');
             break;
           case err.TIMEOUT:
-            errorMessage = 'Location request timed out. Please try again.';
+            errorMessage = t('submit.location_timeout');
             break;
           default:
-            errorMessage = 'Location access failed. Please try again.';
+            errorMessage = t('submit.location_failed');
         }
       } else if (err instanceof Error && err.message === 'Location request timed out') {
-        errorMessage = 'Location request timed out. Please try again.';
+        errorMessage = t('submit.location_timeout');
       }
 
       setLocationError(errorMessage);
@@ -150,7 +152,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
       defaultLocation = {
         latitude: 22.3072,
         longitude: 73.1812,
-        address: 'Vadodara, Gujarat (Default Location)',
+        address: t('submit.default_location'),
         source: 'default'
       };
       
@@ -175,12 +177,12 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
 
   const handleSubmit = async () => {
     if (!description.trim()) {
-      setError('Please provide a description of the issue.');
+      setError(t('submit.error_description_required'));
       return;
     }
 
     if (!location) {
-      setError('Please allow location access or provide a manual location.');
+      setError(t('submit.error_location_required'));
       return;
     }
 
@@ -209,7 +211,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
       onSuccess();
     } catch (err) {
       console.error('Failed to submit report:', err);
-      setError('Failed to submit report. Please try again.');
+      setError(t('submit.error_submit_failed'));
     } finally {
       setIsLoading(false);
     }
@@ -257,8 +259,8 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
           <div className="p-6">
             {/* Header */}
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-foreground mb-2">Submit Report</h2>
-              <p className="text-muted-foreground">Review and submit your civic issue report</p>
+              <h2 className="text-2xl font-semibold text-foreground mb-2">{t('submit.header_title')}</h2>
+              <p className="text-muted-foreground">{t('submit.header_subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -266,7 +268,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
               <div className="space-y-4">
                 {/* Photo Preview */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Issue Photo</Label>
+                  <Label className="text-sm font-medium mb-2 block">{t('submit.issue_photo')}</Label>
                   <div className="relative">
                     <img
                       src={photoPreview}
@@ -287,7 +289,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
 
                 {/* Issue Type */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Issue Type</Label>
+                  <Label className="text-sm font-medium mb-2 block">{t('submit.issue_type')}</Label>
                   <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
                     <Camera className="w-4 h-4 text-civic-blue" />
                     <span className="font-medium capitalize">{issueType}</span>
@@ -296,7 +298,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
 
                 {/* Severity Selection */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Issue Severity</Label>
+                  <Label className="text-sm font-medium mb-2 block">{t('submit.issue_severity')}</Label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['low', 'medium', 'high'] as const).map((sev) => (
                       <Button
@@ -306,13 +308,11 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                         className={severity === sev ? getSeverityColor(sev) : ""}
                         onClick={() => setSeverity(sev)}
                       >
-                        {sev.charAt(0).toUpperCase() + sev.slice(1)}
+                        {t(`submit.severity_${sev}`)}
                       </Button>
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    High severity issues get priority attention
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('submit.severity_note')}</p>
                 </div>
               </div>
 
@@ -320,26 +320,24 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
               <div className="space-y-4">
                 {/* Description */}
                 <div>
-                  <Label htmlFor="description" className="text-sm font-medium mb-2 block">
-                    Description *
-                  </Label>
+                  <Label htmlFor="description" className="text-sm font-medium mb-2 block">{t('submit.description_label')}</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe the issue in detail. Include any relevant information like size, impact, or safety concerns..."
+                    placeholder={t('submit.description_placeholder')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="min-h-[100px]"
                     maxLength={500}
                   />
                   <div className="mt-1 text-xs text-muted-foreground text-right">
-                    {description.length}/500 characters
+                    {description.length}/500 {t('submit.characters')}
                   </div>
                 </div>
 
                 {/* Location */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm font-medium">Location</Label>
+                    <Label className="text-sm font-medium">{t('submit.location')}</Label>
                     <div className="flex items-center space-x-2">
                       <Button
                         variant="ghost"
@@ -349,7 +347,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                         className="h-6 px-2 text-xs"
                       >
                         <RefreshCw className={`w-3 h-3 mr-1 ${isLocationLoading ? 'animate-spin' : ''}`} />
-                        Refresh
+                        {t('submit.refresh')}
                       </Button>
                       <Button
                         variant="ghost"
@@ -357,7 +355,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                         onClick={() => setShowManualLocation(!showManualLocation)}
                         className="h-6 px-2 text-xs"
                       >
-                        Manual
+                        {t('submit.manual')}
                       </Button>
                       <Button
                         variant="ghost"
@@ -373,7 +371,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                   {isLocationLoading ? (
                     <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
                       <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Getting location...</span>
+                      <span className="text-sm text-muted-foreground">{t('submit.getting_location')}</span>
                     </div>
                   ) : location ? (
                     <div className="space-y-2">
@@ -383,7 +381,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                       </div>
                       <div className="text-xs text-muted-foreground">
                         <div className="flex items-center justify-between">
-                          <span>Coordinates: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}</span>
+                          <span>{t('submit.coordinates')}: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}</span>
                           <Badge variant="outline" className="text-xs">
                             {getLocationSourceText(location.source)}
                           </Badge>
@@ -392,7 +390,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                     </div>
                   ) : (
                     <div className="p-3 bg-muted/50 rounded-lg text-center">
-                      <span className="text-sm text-muted-foreground">No location available</span>
+                      <span className="text-sm text-muted-foreground">{t('submit.no_location')}</span>
                     </div>
                   )}
 
@@ -400,7 +398,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                   {showManualLocation && (
                     <div className="mt-3 space-y-2">
                       <Input
-                        placeholder="Enter address manually..."
+                        placeholder={t('submit.enter_address')}
                         value={manualAddress}
                         onChange={(e) => setManualAddress(e.target.value)}
                         className="text-sm"
@@ -412,7 +410,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                           disabled={!manualAddress.trim()}
                           className="flex-1"
                         >
-                          Set Location
+                          {t('submit.set_location')}
                         </Button>
                         <Button
                           variant="outline"
@@ -420,7 +418,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                           onClick={() => setShowManualLocation(false)}
                           className="flex-1"
                         >
-                          Cancel
+                          {t('common.cancel')}
                         </Button>
                       </div>
                     </div>
@@ -434,11 +432,11 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                         <p className="text-xs text-amber-700">{locationError}</p>
                       </div>
                       <div className="mt-2 text-xs text-amber-600">
-                        <p><strong>To enable location:</strong></p>
+                        <p><strong>{t('submit.enable_location_title')}</strong></p>
                         <ul className="list-disc list-inside mt-1 space-y-1">
-                          <li>Check browser location permissions</li>
-                          <li>Allow location access when prompted</li>
-                          <li>Or use manual location entry above</li>
+                          <li>{t('submit.enable_location_step1')}</li>
+                          <li>{t('submit.enable_location_step2')}</li>
+                          <li>{t('submit.enable_location_step3')}</li>
                         </ul>
                         <Button
                           variant="ghost"
@@ -447,7 +445,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                           className="mt-2 h-6 px-2 text-xs text-amber-700 hover:text-amber-800"
                         >
                           <HelpCircle className="w-3 h-3 mr-1" />
-                          Get Help
+                          {t('submit.get_help')}
                         </Button>
                       </div>
                     </div>
@@ -456,7 +454,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
 
                 {/* Timestamp */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Reported At</Label>
+                  <Label className="text-sm font-medium mb-2 block">{t('submit.reported_at')}</Label>
                   <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
                     <Clock className="w-4 h-4 text-civic-orange" />
                     <span className="text-sm">{new Date().toLocaleString()}</span>
@@ -477,13 +475,7 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-border/50">
-              <Button
-                variant="outline"
-                onClick={onClose}
-                disabled={isLoading}
-              >
-                Cancel
-              </Button>
+              <Button variant="outline" onClick={onClose} disabled={isLoading}>{t('common.cancel')}</Button>
               <Button
                 onClick={handleSubmit}
                 disabled={isLoading || !description.trim() || !location}
@@ -492,12 +484,12 @@ const ReportSubmission = ({ photo, issueType, onClose, onSuccess }: ReportSubmis
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
+                    {t('submit.submitting')}
                   </>
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Submit Report
+                    {t('submit.submit_report')}
                   </>
                 )}
               </Button>
