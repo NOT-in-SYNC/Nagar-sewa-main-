@@ -11,87 +11,89 @@ import {
   Users,
   CheckCircle
 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 const features = [
   {
     icon: Camera,
-    title: "Smart Photo Capture",
-    description: "AI-enhanced photo capture with automatic issue categorization and quality optimization",
-    badge: "Core Feature",
+    titleKey: "features.smart_photo",
+    descKey: "features.smart_photo_desc",
+    badgeKey: "features.badge_core",
     color: "civic-blue"
   },
   {
     icon: MapPin,
-    title: "Precise GPS Tracking",
-    description: "Millimeter-accurate location tagging ensures reports reach the right departments instantly",
-    badge: "Essential",
+    titleKey: "features.precise_gps",
+    descKey: "features.precise_gps_desc",
+    badgeKey: "features.badge_essential",
     color: "civic-green"
   },
   {
     icon: Zap,
-    title: "Real-time Processing",
-    description: "Issues are routed to relevant authorities within seconds using intelligent categorization",
-    badge: "Fast",
+    titleKey: "features.realtime",
+    descKey: "features.realtime_desc",
+    badgeKey: "features.badge_fast",
     color: "civic-orange"
   },
   {
     icon: Shield,
-    title: "Verified Reports",
-    description: "Built-in fraud detection and community verification ensure report authenticity",
-    badge: "Trusted",
+    titleKey: "features.verified",
+    descKey: "features.verified_desc",
+    badgeKey: "features.badge_trusted",
     color: "civic-purple"
   },
   {
     icon: BarChart3,
-    title: "Impact Analytics",
-    description: "Track your contributions and see community-wide improvements with detailed insights",
-    badge: "Insights",
+    titleKey: "features.analytics",
+    descKey: "features.analytics_desc",
+    badgeKey: "features.badge_insights",
     color: "civic-blue"
   },
   {
     icon: Bell,
-    title: "Status Updates",
-    description: "Receive notifications when your reports are reviewed, assigned, and resolved",
-    badge: "Updates",
+    titleKey: "features.status_updates",
+    descKey: "features.status_updates_desc",
+    badgeKey: "features.badge_updates",
     color: "civic-green"
   },
   {
     icon: Clock,
-    title: "Priority Routing",
-    description: "Emergency issues get fast-tracked while routine reports follow standard workflows",
-    badge: "Smart",
+    titleKey: "features.priority_routing",
+    descKey: "features.priority_routing_desc",
+    badgeKey: "features.badge_smart",
     color: "civic-orange"
   },
   {
     icon: Users,
-    title: "Community Engagement",
-    description: "Connect with neighbors, validate reports, and collaborate on neighborhood improvements",
-    badge: "Social",
+    titleKey: "features.community_engagement",
+    descKey: "features.community_engagement_desc",
+    badgeKey: "features.badge_social",
     color: "civic-purple"
   },
   {
     icon: CheckCircle,
-    title: "Resolution Tracking",
-    description: "Follow your report's journey from submission to completion with transparent updates",
-    badge: "Transparent",
+    titleKey: "features.resolution_tracking",
+    descKey: "features.resolution_tracking_desc",
+    badgeKey: "features.badge_transparent",
     color: "civic-blue"
   }
 ];
 
 const Features = () => {
+  const { t } = useI18n();
   return (
     <section id="features" className="py-20 bg-background">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
           <Badge variant="secondary" className="mb-4 text-sm font-medium">
-            Powerful Features
+            {t("features.header_badge")}
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Everything You Need to Make a Difference
+            {t("features.header_title")}
           </h2>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Our platform combines cutting-edge technology with intuitive design to make civic engagement effortless and impactful.
+            {t("features.header_subtitle")}
           </p>
         </div>
 
@@ -111,18 +113,18 @@ const Features = () => {
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                      {feature.title}
+                      {t(feature.titleKey)}
                     </h3>
                     <Badge 
                       variant="outline" 
                       className="text-xs bg-background/50 border-border/30"
                     >
-                      {feature.badge}
+                      {t(feature.badgeKey)}
                     </Badge>
                   </div>
                   
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    {feature.description}
+                    {t(feature.descKey)}
                   </p>
                 </div>
               </div>
@@ -133,15 +135,13 @@ const Features = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <div className="bg-gradient-hero rounded-3xl p-8 max-w-2xl mx-auto border border-border/30">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Ready to Transform Your Community?
-            </h3>
+            <h3 className="text-2xl font-bold text-foreground mb-4">{t("features.cta_title")}</h3>
             <p className="text-muted-foreground mb-6">
-              Join thousands of citizens already making a difference with NagarSewa.
+              {t("features.cta_subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-4">
               <div className="text-sm text-muted-foreground">
-                ⚡ Free to use • 🔒 Privacy protected • 📱 Works everywhere
+                {t("features.cta_bullets")}
               </div>
             </div>
           </div>
