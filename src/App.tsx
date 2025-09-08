@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import SignIn from "./pages/SignIn";
 import MainApp from "./pages/MainApp";
-import MyReports from "./pages/MyReports";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -31,16 +30,6 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <MainApp />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* My Reports - Protected */}
-          <Route 
-            path="/my-reports" 
-            element={
-              <ProtectedRoute>
-                <MyReports />
               </ProtectedRoute>
             } 
           />
