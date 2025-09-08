@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
@@ -31,11 +31,9 @@ const MainApp = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <img
-                  src="public/nagarsewalogo.png"
-                  alt="Nagar Seva Logo"
-                  className="w-10 h-10 rounded-lg object-contain"
-                />
+                <div className="w-10 h-10 bg-gradient-civic rounded-lg flex items-center justify-center">
+                  <User className="w-6 h-6 text-primary-foreground" />
+                </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-civic-green rounded-full animate-glow-pulse"></div>
               </div>
               <div>
@@ -54,6 +52,12 @@ const MainApp = () => {
               <a href="#success" className="text-muted-foreground hover:text-primary transition-colors">
                 Success Stories
               </a>
+              <button 
+                onClick={() => navigate('/my-reports')}
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                My Reports
+              </button>
             </nav>
 
             <div className="flex items-center space-x-4">
