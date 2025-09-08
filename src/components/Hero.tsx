@@ -126,15 +126,15 @@ const Hero = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroCityscape})` }}
       >
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-civic-blue/20 via-transparent to-civic-green/20"></div>
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(120deg, rgba(255,153,0,0.12) 0%, rgba(255,255,255,0) 40%, rgba(19,133,27,0.12) 80%)' }}></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center">
         <div className="max-w-4xl mx-auto animate-fade-in">
           {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-background/80 backdrop-blur-sm border border-border/50 rounded-full px-6 py-3 mb-8">
+          <div className="inline-flex items-center space-x-2 bg-background/90 backdrop-blur-sm border border-border/50 rounded-full px-6 py-3 mb-8">
             <div className="w-2 h-2 bg-civic-green rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-foreground">Trusted by 50,000+ citizens nationwide</span>
           </div>
@@ -149,7 +149,7 @@ const Hero = () => {
           </h1>
 
           {/* Subtitle with better visibility */}
-          <div className="bg-background/90 backdrop-blur-sm rounded-2xl p-6 mb-12 border border-border/30">
+          <div className="bg-background/95 backdrop-blur-sm rounded-2xl p-6 mb-12 border border-border/30">
             <p className="text-xl md:text-2xl text-foreground font-medium max-w-3xl mx-auto leading-relaxed">
               Empower your community with instant civic reporting. Snap, report, and watch your city become better, one issue at a time.
             </p>
