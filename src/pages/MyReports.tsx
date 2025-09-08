@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -15,380 +15,369 @@ import {
   FileText,
   Camera,
   TrendingUp,
-  Users,
-  Award
+  Filter,
+  RefreshCw
 } from "lucide-react";
-import { reportStorage, CivicReport } from "@/lib/reportStorage";
-import { addDemoData } from "@/lib/reportStorage";
+import { reportStorage, CivicReport, addDemoData } from "@/lib/reportStorage";
 
 const MyReports = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState<CivicReport[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    total: 0,
-    byStatus: { reported: 0, 'in-progress': 0, resolved: 0 },
-    byType: {} as Record<string, number>,
-    recent: 0
-  });
+  const [refreshing, setRefreshing] = useState(false);
+  const [filter, setFilter] = useState<'all' | 'reported' | 'in-progress' | 'resolved'>('all');
 
-  // Load reports and stats
   useEffect(() => {
-    const initializeData = async () => {
-      await loadReports();
-      await loadStats();
-      
-      // Add demo data if no reports exist
-      if (reports.length === 0) {
-        try {
-          addDemoData();
-          setTimeout(async () => {
-            await loadReports();
-            await loadStats();
-          }, 1000);
-        } catch (error) {
-          console.error('Error adding demo data:', error);
-        }
-      }
-    };
-    
-    initializeData();
+    // Initialize demo data if no reports exist
+    if (reportStorage.getCount() === 0) {
+      addDemoData();
+    }
+    loadReports();
+    // Simulate real-time updates every 30 seconds
+    const interval = setInterval(loadReports, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Simulate real-time progress updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      simulateProgressUpdates();
-    }, 30000); // Update every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [reports]);
-
-  const loadReports = async () => {
+  const loadReports = async (isRefresh = false) => {
     try {
+      if (isRefresh) setRefreshing(true);
       const allReports = await reportStorage.getAllReports();
       setReports(allReports);
+      
+      // Simulate real-time status updates for demo purposes
+      simulateStatusUpdates(allReports);
     } catch (error) {
       console.error('Failed to load reports:', error);
     } finally {
       setLoading(false);
+      if (isRefresh) setRefreshing(false);
     }
   };
 
-  const loadStats = async () => {
-    try {
-      const statistics = await reportStorage.getStatistics();
-      setStats(statistics);
-    } catch (error) {
-      console.error('Failed to load statistics:', error);
-    }
+  const handleRefresh = () => {
+    loadReports(true);
   };
 
-  const simulateProgressUpdates = async () => {
-    // Randomly update some reports to simulate real-time progress
-    const reportsToUpdate = reports.filter(report => 
-      report.status === 'reported' && Math.random() < 0.1 // 10% chance
-    );
-
-    for (const report of reportsToUpdate) {
-      if (Math.random() < 0.7) {
+  const simulateStatusUpdates = async (reports: CivicReport[]) => {
+    // Simulate status progression for demo reports
+    for (const report of reports) {
+      if (report.status === 'reported' && Math.random() < 0.1) {
+        // 10% chance to move from reported to in-progress
         await reportStorage.updateReportStatus(report.id, 'in-progress');
+      } else if (report.status === 'in-progress' && Math.random() < 0.05) {
+        // 5% chance to move from in-progress to resolved
+        await reportStorage.updateReportStatus(report.id, 'resolved');
       }
-    }
-
-    // Update some in-progress reports to resolved
-    const inProgressReports = reports.filter(report => 
-      report.status === 'in-progress' && Math.random() < 0.15 // 15% chance
-    );
-
-    for (const report of inProgressReports) {
-      await reportStorage.updateReportStatus(report.id, 'resolved');
-    }
-
-    // Reload data after updates
-    loadReports();
-    loadStats();
-  };
-
-  const getStatusColor = (status: CivicReport['status']) => {
-    switch (status) {
-      case 'reported': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getStatusIcon = (status: CivicReport['status']) => {
     switch (status) {
-      case 'reported': return <Clock className="w-4 h-4" />;
-      case 'in-progress': return <TrendingUp className="w-4 h-4" />;
-      case 'resolved': return <CheckCircle className="w-4 h-4" />;
-      default: return <AlertCircle className="w-4 h-4" />;
+      case 'reported':
+        return <FileText className="w-4 h-4" />;
+      case 'in-progress':
+        return <Clock className="w-4 h-4" />;
+      case 'resolved':
+        return <CheckCircle className="w-4 h-4" />;
+      default:
+        return <AlertCircle className="w-4 h-4" />;
+    }
+  };
+
+  const getStatusColor = (status: CivicReport['status']) => {
+    switch (status) {
+      case 'reported':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'in-progress':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'resolved':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getProgressValue = (status: CivicReport['status']) => {
     switch (status) {
-      case 'reported': return 25;
-      case 'in-progress': return 75;
-      case 'resolved': return 100;
-      default: return 0;
+      case 'reported':
+        return 25;
+      case 'in-progress':
+        return 75;
+      case 'resolved':
+        return 100;
+      default:
+        return 0;
     }
   };
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: CivicReport['severity']) => {
     switch (severity) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'high':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+  const filteredReports = reports.filter(report => 
+    filter === 'all' || report.status === filter
+  );
+
+  const getStatistics = () => {
+    const total = reports.length;
+    const byStatus = reports.reduce((acc, report) => {
+      acc[report.status] = (acc[report.status] || 0) + 1;
+      return acc;
+    }, {} as Record<CivicReport['status'], number>);
+
+    return { total, byStatus };
   };
 
-  const getTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    return formatDate(date);
-  };
+  const stats = getStatistics();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto px-6 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-civic-blue mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading your reports...</p>
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-civic-blue/5 via-background to-civic-green/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your reports...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-lg border-b border-border/30 sticky top-0 z-40">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/app')}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to App
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">My Reports</h1>
-                <p className="text-sm text-muted-foreground">Track your civic engagement progress</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={() => navigate('/app')}
-                className="bg-gradient-civic hover:opacity-90"
-              >
-                <FileText className="w-4 h-4 mr-2" />
-                New Report
-              </Button>
+    <div className="min-h-screen bg-gradient-to-br from-civic-blue/5 via-background to-civic-green/5">
+      <div className="container mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">My Reports</h1>
+              <p className="text-muted-foreground">Track the progress of your civic issue reports</p>
             </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
         </div>
-      </div>
 
-      <div className="container mx-auto px-6 py-8">
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+          <Card className="bg-gradient-card border-border/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-600">Total Reports</p>
-                  <p className="text-3xl font-bold text-blue-900">{stats.total}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Reports</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.total}</p>
                 </div>
-                <FileText className="w-8 h-8 text-blue-600" />
+                <div className="w-12 h-12 bg-gradient-civic rounded-xl flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-primary-foreground" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200">
+          <Card className="bg-gradient-card border-border/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-yellow-600">Pending</p>
-                  <p className="text-3xl font-bold text-yellow-900">{stats.byStatus.reported}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Reported</p>
+                  <p className="text-2xl font-bold text-blue-600">{stats.byStatus.reported || 0}</p>
                 </div>
-                <Clock className="w-8 h-8 text-yellow-600" />
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+          <Card className="bg-gradient-card border-border/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-600">In Progress</p>
-                  <p className="text-3xl font-bold text-blue-900">{stats.byStatus['in-progress']}</p>
+                  <p className="text-sm font-medium text-muted-foreground">In Progress</p>
+                  <p className="text-2xl font-bold text-yellow-600">{stats.byStatus['in-progress'] || 0}</p>
                 </div>
-                <TrendingUp className="w-8 h-8 text-blue-600" />
+                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-yellow-600" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+          <Card className="bg-gradient-card border-border/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-600">Resolved</p>
-                  <p className="text-3xl font-bold text-green-900">{stats.byStatus.resolved}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Resolved</p>
+                  <p className="text-2xl font-bold text-green-600">{stats.byStatus.resolved || 0}</p>
                 </div>
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                </div>
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { key: 'all', label: 'All Reports', count: reports.length },
+            { key: 'reported', label: 'Reported', count: stats.byStatus.reported || 0 },
+            { key: 'in-progress', label: 'In Progress', count: stats.byStatus['in-progress'] || 0 },
+            { key: 'resolved', label: 'Resolved', count: stats.byStatus.resolved || 0 }
+          ].map(({ key, label, count }) => (
+            <Button
+              key={key}
+              variant={filter === key ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilter(key as any)}
+              className={filter === key ? "bg-gradient-civic" : ""}
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              {label} ({count})
+            </Button>
+          ))}
         </div>
 
         {/* Reports List */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">Your Reports</h2>
-            <div className="text-sm text-muted-foreground">
-              {reports.length} report{reports.length !== 1 ? 's' : ''} found
-            </div>
-          </div>
-
-          {reports.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">No Reports Yet</h3>
-                <p className="text-muted-foreground mb-6">
-                  Start making a difference by reporting issues in your community.
-                </p>
-                <Button
-                  onClick={() => navigate('/app')}
+        {filteredReports.length === 0 ? (
+          <Card className="bg-gradient-card border-border/50">
+            <CardContent className="p-12 text-center">
+              <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">No Reports Found</h3>
+              <p className="text-muted-foreground mb-6">
+                {filter === 'all' 
+                  ? "You haven't submitted any reports yet. Start by reporting a civic issue!"
+                  : `No reports with status "${filter}" found.`
+                }
+              </p>
+              {filter === 'all' && (
+                <Button 
+                  onClick={() => navigate('/')}
                   className="bg-gradient-civic hover:opacity-90"
                 >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Create Your First Report
+                  Report an Issue
                 </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {reports.map((report) => (
-                <Card key={report.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <CardTitle className="text-lg">{report.issueType}</CardTitle>
-                          <Badge className={`${getStatusColor(report.status)} border`}>
-                            <span className="flex items-center space-x-1">
-                              {getStatusIcon(report.status)}
-                              <span className="capitalize">{report.status.replace('-', ' ')}</span>
-                            </span>
-                          </Badge>
-                          <Badge className={`${getSeverityColor(report.severity)} border`}>
-                            {report.severity} priority
-                          </Badge>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-6">
+            {filteredReports.map((report) => (
+              <Card key={report.id} className="bg-gradient-card border-border/50 hover:shadow-card transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <CardTitle className="text-lg font-semibold text-foreground">
+                          {report.issueType}
+                        </CardTitle>
+                        <Badge className={`${getStatusColor(report.status)} border`}>
+                          {getStatusIcon(report.status)}
+                          <span className="ml-1 capitalize">{report.status.replace('-', ' ')}</span>
+                        </Badge>
+                        <Badge className={`${getSeverityColor(report.severity)} border`}>
+                          {report.severity} Priority
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground text-sm mb-3">{report.description}</p>
+                      
+                      {/* Progress Bar */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Progress</span>
+                          <span className="font-medium text-foreground">{getProgressValue(report.status)}%</span>
                         </div>
-                        <CardDescription className="text-base">
-                          {report.description}
-                        </CardDescription>
+                        <Progress 
+                          value={getProgressValue(report.status)} 
+                          className={`h-2 ${
+                            report.status === 'resolved' ? '[&>div]:bg-green-500' :
+                            report.status === 'in-progress' ? '[&>div]:bg-yellow-500' :
+                            '[&>div]:bg-blue-500'
+                          }`}
+                        />
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span className={report.status === 'reported' ? 'text-blue-600 font-medium' : ''}>Reported</span>
+                          <span className={report.status === 'in-progress' ? 'text-yellow-600 font-medium' : ''}>In Progress</span>
+                          <span className={report.status === 'resolved' ? 'text-green-600 font-medium' : ''}>Resolved</span>
+                        </div>
                       </div>
                     </div>
-                  </CardHeader>
-
-                  <CardContent className="pt-0">
-                    {/* Progress Bar */}
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-foreground">Progress</span>
-                        <span className="text-sm text-muted-foreground">{getProgressValue(report.status)}%</span>
-                      </div>
-                      <Progress 
-                        value={getProgressValue(report.status)} 
-                        className="h-2"
-                      />
+                    
+                    <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center ml-4">
+                      <Camera className="w-8 h-8 text-muted-foreground" />
                     </div>
-
-                    {/* Report Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <MapPin className="w-4 h-4" />
-                        <span className="truncate">{report.location.address}</span>
-                      </div>
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>Submitted {getTimeAgo(report.submittedAt)}</span>
-                      </div>
+                  </div>
+                </CardHeader>
+                
+                <CardContent>
+                  <Separator className="mb-4" />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="w-4 h-4 text-civic-blue" />
+                      <span className="text-muted-foreground">{report.location.address}</span>
                     </div>
-
-                    <Separator className="my-4" />
-
-                    {/* Report ID and Actions */}
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-muted-foreground">
-                        Report ID: <span className="font-mono font-medium">{report.id}</span>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Last updated: {getTimeAgo(report.updatedAt)}
-                      </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4 text-civic-green" />
+                      <span className="text-muted-foreground">
+                        Submitted: {report.submittedAt.toLocaleDateString()}
+                      </span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                    
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4 text-civic-orange" />
+                      <span className="text-muted-foreground">
+                        Last Updated: {report.updatedAt.toLocaleDateString()}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-4 h-4 text-civic-purple" />
+                      <span className="text-muted-foreground">
+                        Report ID: {report.id}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Real-time Update Indicator */}
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center space-x-2 bg-background/80 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2">
+            <div className="w-2 h-2 bg-civic-green rounded-full animate-pulse"></div>
+            <span className="text-sm text-muted-foreground">Real-time updates enabled</span>
+          </div>
         </div>
-
-        {/* Community Impact */}
-        <Card className="mt-8 bg-gradient-to-r from-civic-blue/5 to-civic-green/5 border-civic-blue/20">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <Users className="w-6 h-6 text-civic-blue" />
-                <h3 className="text-lg font-semibold text-foreground">Community Impact</h3>
-              </div>
-              <p className="text-muted-foreground mb-4">
-                Your reports are making a real difference in your community. 
-                Keep up the great work!
-              </p>
-              <div className="flex items-center justify-center space-x-6 text-sm">
-                <div className="flex items-center space-x-1">
-                  <Award className="w-4 h-4 text-civic-orange" />
-                  <span className="text-muted-foreground">Community Contributor</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <TrendingUp className="w-4 h-4 text-civic-green" />
-                  <span className="text-muted-foreground">Active Citizen</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
