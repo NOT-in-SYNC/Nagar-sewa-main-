@@ -1,7 +1,10 @@
 import { MapPin, Mail, Phone, Github, Twitter, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+  
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-6 py-12">
@@ -13,7 +16,7 @@ const Footer = () => {
                 <MapPin className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground">NagarSewa</h3>
+                <h3 className="text-lg font-bold text-foreground">CivicReport</h3>
                 <p className="text-xs text-muted-foreground">Empowering Communities</p>
               </div>
             </div>
@@ -53,9 +56,18 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               {['Report an Issue', 'Track Your Reports', 'Earn Rewards', 'My Reports', 'Mobile App'].map((link) => (
                 <li key={link}>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                    {link}
-                  </a>
+                  {link === 'My Reports' ? (
+                    <button 
+                      onClick={() => navigate('/my-reports')}
+                      className="text-muted-foreground hover:text-primary transition-colors text-left"
+                    >
+                      {link}
+                    </button>
+                  ) : (
+                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                      {link}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -67,7 +79,7 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="w-4 h-4 text-civic-blue" />
-                <span className="text-muted-foreground">support@nagarsewa.in</span>
+                <span className="text-muted-foreground">hello@civicreport.com</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Phone className="w-4 h-4 text-civic-green" />
@@ -84,7 +96,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border/50 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © 2024 NagarSewa. All rights reserved.
+            © 2024 CivicReport. All rights reserved.
           </p>
           <div className="flex items-center space-x-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
