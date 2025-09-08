@@ -34,17 +34,25 @@ const MyReports = () => {
 
   // Load reports and stats
   useEffect(() => {
-    loadReports();
-    loadStats();
+    const initializeData = async () => {
+      await loadReports();
+      await loadStats();
+      
+      // Add demo data if no reports exist
+      if (reports.length === 0) {
+        try {
+          addDemoData();
+          setTimeout(async () => {
+            await loadReports();
+            await loadStats();
+          }, 1000);
+        } catch (error) {
+          console.error('Error adding demo data:', error);
+        }
+      }
+    };
     
-    // Add demo data if no reports exist
-    if (reports.length === 0) {
-      addDemoData();
-      setTimeout(() => {
-        loadReports();
-        loadStats();
-      }, 1000);
-    }
+    initializeData();
   }, []);
 
   // Simulate real-time progress updates
