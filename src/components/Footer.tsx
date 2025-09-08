@@ -51,7 +51,7 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-sm font-semibold text-foreground">For Citizens</h4>
             <ul className="space-y-2 text-sm">
-              {['Report an Issue', 'Track Your Reports', 'Earn Rewards', 'Join Community', 'Mobile App'].map((link) => (
+              {['Report an Issue', 'Track Your Reports', 'Earn Rewards', 'My Reports', 'Mobile App'].map((link) => (
                 <li key={link}>
                   <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
                     {link}
@@ -71,11 +71,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Phone className="w-4 h-4 text-civic-green" />
-                <span className="text-muted-foreground">+91 999999999</span>
+                <span className="text-muted-foreground">+1 (555) 123-4567</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <MapPin className="w-4 h-4 text-civic-orange" />
-                <span className="text-muted-foreground">Vdodara, GUJARAT</span>
+                <span className="text-muted-foreground">San Francisco, CA</span>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border/50 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © 2025 NagarSewa. All rights reserved.
+            © 2024 NagarSewa. All rights reserved.
           </p>
           <div className="flex items-center space-x-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
